@@ -12,7 +12,7 @@ type PostReposity struct {
 }
 
 // NewPostReposity : fetching database
-func NewPostReposity(db infrastructure.Database) PostReposity {
+func NewPostRepository(db infrastructure.Database) PostReposity {
 	return PostReposity{
 		db: db,
 	}

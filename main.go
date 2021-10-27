@@ -1,19 +1,27 @@
 package main
 
 import (
-	"net/http"
-
+	"github.com/andkolbe/gin-docker-blog/api/controller"
+	"github.com/andkolbe/gin-docker-blog/api/repository"
+	"github.com/andkolbe/gin-docker-blog/api/routes"
+	"github.com/andkolbe/gin-docker-blog/api/service"
 	"github.com/andkolbe/gin-docker-blog/infrastructure"
-	"github.com/gin-gonic/gin"
+	"github.com/andkolbe/gin-docker-blog/models"
 )
 
-func main() {
-	router := gin.Default() // initialize Gin router
+func init() {
+	infrastructure.LoadEnv()
+}
 
-	router.GET("/", func(c *gin.Context) {
-		infrastructure.LoadEnv()
-		infrastructure.NewDatabase()
-		c.JSON(http.StatusOK, gin.H{"data": "Hello World!"})
-	})
-	router.Run(":8000")
+func main() {
+	router := infrastructure.NewGinRouter() //router has been initialized and configured
+    db := infrastructure.NewDatabase() // database has been initialized and configured
+    postRepository := repository.NewPostRepository(db) // repository are being setup
+    postService := service.NewPostService(postRepository) // service are being setup
+    postController := controller.NewPostController(postService) // controller are being set up
+    postRoute := routes.NewPostRoute(postController, router) // post routes are initialized
+    postRoute.Setup() // post routes are being setup
+
+    db.DB.AutoMigrate(&models.Post{}) // migrating Post model to datbase table
+    router.Gin.Run(":8000") //server started on 8000 port
 }
