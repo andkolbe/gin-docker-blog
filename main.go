@@ -12,5 +12,5 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"data": "Hello World!"})
 	})
-	router.Run()
+	router.Run(":8000")
 }
