@@ -1,0 +1,24 @@
+# we need docker compose for running multi-container Docker apps
+version: '3'
+services:
+  db:
+    image: mysql/mysql-server:5.7
+    ports:
+      - "3305:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_USER=${DB_USER}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD}"
+      - "MYSQL_DATABASE=${DB_NAME}"   
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    # attaching our code files directly to the containers, so that we don't have to rebuild the images for every change in the files
+    volumes:
+      - ".:/app"
+    depends_on:
+      - db
+    # link the database container to the web container 
+    links:
+      - "db:database"
